@@ -108,7 +108,7 @@ defmodule Qiniu.ChunkUpload do
     ])
 
     opts_string = Keyword.take(opts, [:key, :mimeType])
-      |> Enum.reduce("", fn({k, v}, acc) -> acc <> "/#{k}/#{Base.encode64(v)}" end)
+      |> Enum.reduce("", fn({k, v}, acc) -> acc <> "/#{k}/#{Base.url_encode64(v)}" end)
 
     url = Qiniu.config[:up_host] <> "/mkfile/#{size}#{opts_string}"
     post_with_retry(url, ctxs, %{headers: headers})

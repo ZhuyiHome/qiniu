@@ -7,7 +7,7 @@ defmodule Qiniu.ChunkUpload do
 
   @default_block_size 1024 * 1024 * 4
 
-  @default_chunk_size 1024 * 1024
+  @default_chunk_size 1024 * 256
 
 
   @doc """
@@ -114,7 +114,7 @@ defmodule Qiniu.ChunkUpload do
     post_with_retry(url, ctxs, %{headers: headers})
   end
 
-  def post_with_retry(url, body, headers, retry_limit \\ 1)
+  def post_with_retry(url, body, headers, retry_limit \\ 3)
   def post_with_retry(url, body, headers, retry_limit) when retry_limit > 0 do
     try do
       Qiniu.HTTP.post(url, body, headers)
@@ -127,6 +127,10 @@ defmodule Qiniu.ChunkUpload do
     end
   end
   def post_with_retry(url, body, headers, _retry_limit) do
-    Qiniu.HTTP.post(url, body, headers)
+    try do
+      Qiniu.HTTP.post(url, body, headers)
+    catch
+      e -> {:error, %{reason: e.reason}}
+    end
   end
 end
